@@ -435,8 +435,8 @@ class mainapp(BoxLayout):
         #finalexprstr=finalexprstr.replace('e','E')
         #finalexprstr=finalexprstr.replace('log','log10')
         try:
-            expr=N(sympify(finalexprstr))
-            #expr=N(parse_expr(finalexprstr,transformations=transformations))
+            #expr=N(sympify(finalexprstr))
+            expr=N(parse_expr(finalexprstr,transformations=transformations))
         except:
             expr=finalexprstr
         try:
@@ -445,7 +445,7 @@ class mainapp(BoxLayout):
             tex=expr
         self.ou.text=str(tex)
     def differentiate(self,ins):
-        finalexprstr = self.out.text.replace('^', '**')
+        finalexprstr = self.rout.text.replace('^', '**')
         #finalexprstr = finalexprstr.replace('e', 'E')
         #finalexprstr = finalexprstr.replace('log', 'log10')
         try:
@@ -457,7 +457,7 @@ class mainapp(BoxLayout):
         except Exception as e:
             print e
     def integrate(self,ins):
-        finalexprstr = self.out.text.replace('^', '**')
+        finalexprstr = self.rout.text.replace('^', '**')
         #finalexprstr = finalexprstr.replace('e', 'E')
         #finalexprstr = finalexprstr.replace('log', 'log10')
         try:
