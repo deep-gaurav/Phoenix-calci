@@ -6,8 +6,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 from kivy import *
 from kivymd.label import MDLabel
-#UNITTEST
+
+#Android Fixing
 import os
+
 if not os.path.isdir('./unittest'):
     import zipfile
 
@@ -15,14 +17,16 @@ if not os.path.isdir('./unittest'):
     zip_ref.extractall("./")
     zip_ref.close()
 
-from sympy.parsing.sympy_parser import parse_expr,standard_transformations,implicit_multiplication_application,function_exponentiation
-from sympy import N,sympify,diff,integrate,symbols
+from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application, \
+    function_exponentiation
+from sympy import N, sympify, diff, integrate, symbols
 
+from kivymd.dialog import MDDialog
 from kivymd.label import MDLabel
 from kivymd.textfields import MDTextField
 
-x=symbols('x')
-kvv="""
+x = symbols('x')
+kvv = """
 
 #:import Toolbar kivymd.toolbar.Toolbar
 #:import ThemeManager kivymd.theming.ThemeManager
@@ -360,121 +364,129 @@ BoxLayout:
                                 font_size:20
                                 halign:'center'
 """
-tex='0'
+tex = '0'
+
 
 class mainapp(BoxLayout):
-    def __init__(self,**kwargs):
-        BoxLayout.__init__(self,**kwargs)
-        self.orientation='vertical'
+    def __init__(self, **kwargs):
+        BoxLayout.__init__(self, **kwargs)
+        self.orientation = 'vertical'
 
-        self.numpad=Builder.load_string(kvv)
+        self.numpad = Builder.load_string(kvv)
         self.add_widget(self.numpad)
 
-        #Buttons
-        self.out=self.numpad.ids['out']
-        self.rout=self.numpad.ids['realtimeupdate']
-        self.delbutton=self.numpad.ids['cancel_but']
-        self.equalbutton=self.numpad.ids['equal_but']
-        self.diffrenbutton=self.numpad.ids['differentiate']
-        self.integrabutton=self.numpad.ids['integrate']
-        #Binds
-        self.delbutton.bind(on_release=self.delholdclr,on_press=self.delbut)
+        # Buttons
+        self.out = self.numpad.ids['out']
+        self.rout = self.numpad.ids['realtimeupdate']
+        self.delbutton = self.numpad.ids['cancel_but']
+        self.equalbutton = self.numpad.ids['equal_but']
+        self.diffrenbutton = self.numpad.ids['differentiate']
+        self.integrabutton = self.numpad.ids['integrate']
+        # Binds
+        self.delbutton.bind(on_release=self.delholdclr, on_press=self.delbut)
         self.equalbutton.bind(on_release=self.equalcall)
         self.diffrenbutton.bind(on_release=self.differentiate)
         self.integrabutton.bind(on_release=self.integrate)
-        #Clock
-        Clock.schedule_interval(self.outputloop,0)
+        # Clock
+        Clock.schedule_interval(self.outputloop, 0)
 
-        #Coloring
+        # Coloring
         for x in self.numpad.ids['nums'].children:
-            x.md_bg_color=(0.5,0.5,0.5,1)
-            x.children[0].font_size=40
+            x.md_bg_color = (0.5, 0.5, 0.5, 1)
+            x.children[0].font_size = 40
         for x in self.numpad.ids['basicbuts'].children:
-            x.md_bg_color=(0.4,0.4,0.4,1)
-            x.children[0].font_size=40
+            x.md_bg_color = (0.4, 0.4, 0.4, 1)
+            x.children[0].font_size = 40
         for x in self.numpad.ids['usebut'].children:
-            x.md_bg_color=(0.2,0.1,0.4,0.5)
-            x.children[0].font_size=40
+            x.md_bg_color = (0.2, 0.1, 0.4, 0.5)
+            x.children[0].font_size = 40
         for x in self.numpad.ids['functionsbut'].children:
-            x.md_bg_color=(0,0.1,0.4,0.4)
-            x.children[0].font_size=40
+            x.md_bg_color = (0, 0.1, 0.4, 0.4)
+            x.children[0].font_size = 40
 
+        # extras
+        self.pretex = '..'
 
-        #extras
-        self.pretex='..'
-    def outputloop(self,dt):
-        tex=self.out.text
-        if tex=='':
-            tex='0'
-        elif len(tex)>1 and tex[:1]=='0':
-            tex=tex[1:]
-        self.out.text=tex
-        if self.out.text!=self.rout.text and self.out.text!=self.pretex:
-            self.equalcall(None,out=self.rout)
-            self.pretex=self.out.text
-        if self.rout.text==self.out.text:
-            self.rout.text=self.out.text
-    def delbut(self,ins):
+    def outputloop(self, dt):
         tex = self.out.text
-        tex=tex[:-1]
-        self.out.text=tex
-        Clock.schedule_once(self.clearall,1)
-    def clearall(self,ins):
-        self.out.text='0'
+        if tex == '':
+            tex = '0'
+        elif len(tex) > 1 and tex[:1] == '0':
+            tex = tex[1:]
+        self.out.text = tex
+        if self.out.text != self.rout.text and self.out.text != self.pretex:
+            self.equalcall(None, out=self.rout)
+            self.pretex = self.out.text
+        if self.rout.text == self.out.text:
+            self.rout.text = self.out.text
 
-    def delholdclr(self,ins):
+    def delbut(self, ins):
+        tex = self.out.text
+        tex = tex[:-1]
+        self.out.text = tex
+        Clock.schedule_once(self.clearall, 1)
+
+    def clearall(self, ins):
+        self.out.text = '0'
+
+    def delholdclr(self, ins):
         Clock.unschedule(self.clearall)
 
-    def equalcall(self,ins,out=None):
-        if out==None:
-            self.ou=self.out
+    def equalcall(self, ins, out=None):
+        if out == None:
+            self.ou = self.out
         else:
-            self.ou=out
-        transformations = (standard_transformations + (implicit_multiplication_application, ))
-        finalexprstr=self.out.text.replace('^','**')
-        #finalexprstr=finalexprstr.replace('e','E')
-        #finalexprstr=finalexprstr.replace('log','log10')
+            self.ou = out
+        transformations = (standard_transformations + (implicit_multiplication_application,))
+        finalexprstr = self.out.text.replace('^', '**')
+        # finalexprstr=finalexprstr.replace('e','E')
+        # finalexprstr=finalexprstr.replace('log','log10')
         try:
-            #expr=N(sympify(finalexprstr))
-            expr=N(parse_expr(finalexprstr,transformations=transformations))
+            # expr=N(sympify(finalexprstr))
+            expr = N(parse_expr(finalexprstr, transformations=transformations))
         except:
-            expr=finalexprstr
+            expr = finalexprstr
         try:
-            tex=str(eval(str(expr)))
+            tex = str(eval(str(expr)))
         except:
-            tex=expr
-        self.ou.text=str(tex)
-    def differentiate(self,ins):
+            tex = expr
+        self.ou.text = str(tex)
+
+    def differentiate(self, ins):
         finalexprstr = self.rout.text.replace('^', '**')
-        #finalexprstr = finalexprstr.replace('e', 'E')
-        #finalexprstr = finalexprstr.replace('log', 'log10')
+        # finalexprstr = finalexprstr.replace('e', 'E')
+        # finalexprstr = finalexprstr.replace('log', 'log10')
         try:
-            expr=N(sympify(finalexprstr))
-            #expr=N(parse_expr(finalexprstr,transformations=transformations))
-            difexpr=diff(expr,x)
-            self.out.text=str(difexpr)
+            expr = N(sympify(finalexprstr))
+            # expr=N(parse_expr(finalexprstr,transformations=transformations))
+            difexpr = diff(expr, x)
+            self.out.text = str(difexpr)
             self.equalcall(None)
         except Exception as e:
-            print e
-    def integrate(self,ins):
+            errormessage = str(e.message)
+            errordialog = MDDialog(body=errormessage)
+            # TODO
+
+    def integrate(self, ins):
         finalexprstr = self.rout.text.replace('^', '**')
-        #finalexprstr = finalexprstr.replace('e', 'E')
-        #finalexprstr = finalexprstr.replace('log', 'log10')
+        # finalexprstr = finalexprstr.replace('e', 'E')
+        # finalexprstr = finalexprstr.replace('log', 'log10')
         try:
-            expr=N(sympify(finalexprstr))
-            #expr=N(parse_expr(finalexprstr,transformations=transformations))
-            difexpr=integrate(expr,x)
-            self.out.text=str(difexpr).replace('Exp','e')
+            expr = N(sympify(finalexprstr))
+            # expr=N(parse_expr(finalexprstr,transformations=transformations))
+            difexpr = integrate(expr, x)
+            self.out.text = str(difexpr).replace('Exp', 'e')
             self.equalcall(None)
         except Exception as e:
             print e
 
 
 class myapp(App):
-    theme_cls=ThemeManager()
+    theme_cls = ThemeManager()
+
     def build(self):
         return mainapp()
 
 
-A=myapp()
+A = myapp()
 A.run()
