@@ -4,6 +4,7 @@ from kivy.lang.builder import Builder
 from kivymd.theming import ThemeManager
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
+from kivy import *
 from kivymd.label import MDLabel
 #UNITTEST
 import os
@@ -412,7 +413,7 @@ class mainapp(BoxLayout):
             self.equalcall(None,out=self.rout)
             self.pretex=self.out.text
         if self.rout.text==self.out.text:
-            self.rout.text=''
+            self.rout.text=self.out.text
     def delbut(self,ins):
         tex = self.out.text
         tex=tex[:-1]
@@ -431,8 +432,8 @@ class mainapp(BoxLayout):
             self.ou=out
         transformations = (standard_transformations + (implicit_multiplication_application, ))
         finalexprstr=self.out.text.replace('^','**')
-        finalexprstr=finalexprstr.replace('e','E')
-        finalexprstr=finalexprstr.replace('log','log10')
+        #finalexprstr=finalexprstr.replace('e','E')
+        #finalexprstr=finalexprstr.replace('log','log10')
         try:
             expr=N(sympify(finalexprstr))
             #expr=N(parse_expr(finalexprstr,transformations=transformations))
@@ -445,8 +446,8 @@ class mainapp(BoxLayout):
         self.ou.text=str(tex)
     def differentiate(self,ins):
         finalexprstr = self.out.text.replace('^', '**')
-        finalexprstr = finalexprstr.replace('e', 'E')
-        finalexprstr = finalexprstr.replace('log', 'log10')
+        #finalexprstr = finalexprstr.replace('e', 'E')
+        #finalexprstr = finalexprstr.replace('log', 'log10')
         try:
             expr=N(sympify(finalexprstr))
             #expr=N(parse_expr(finalexprstr,transformations=transformations))
@@ -457,8 +458,8 @@ class mainapp(BoxLayout):
             print e
     def integrate(self,ins):
         finalexprstr = self.out.text.replace('^', '**')
-        finalexprstr = finalexprstr.replace('e', 'E')
-        finalexprstr = finalexprstr.replace('log', 'log10')
+        #finalexprstr = finalexprstr.replace('e', 'E')
+        #finalexprstr = finalexprstr.replace('log', 'log10')
         try:
             expr=N(sympify(finalexprstr))
             #expr=N(parse_expr(finalexprstr,transformations=transformations))
