@@ -20,7 +20,7 @@ if not os.path.isdir('./unittest'):
 from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application, \
     function_exponentiation
 from sympy import N, sympify, diff, integrate, symbols
-
+import sympy
 from kivymd.dialog import MDDialog
 from kivymd.label import MDLabel
 from kivymd.textfields import MDTextField
@@ -76,6 +76,7 @@ BoxLayout:
             font_size:80
             halign:'right'
             padding:(20,0)
+            max_lines:1
         MDLabel:
             id:realtimeupdate
             text:'0'
@@ -363,6 +364,13 @@ BoxLayout:
                                 text:'integrate'
                                 font_size:20
                                 halign:'center'
+                        MDFlatButton:
+                            id:simplify
+                            size_hint:(1,1)
+                            MDLabel:
+                                text:'Simplify'
+                                font_size:20
+                                halign:'center'     
 """
 tex = '0'
 
@@ -382,11 +390,13 @@ class mainapp(BoxLayout):
         self.equalbutton = self.numpad.ids['equal_but']
         self.diffrenbutton = self.numpad.ids['differentiate']
         self.integrabutton = self.numpad.ids['integrate']
+        self.simplifybutton = self.numpad.ids['simplify']
         # Binds
         self.delbutton.bind(on_release=self.delholdclr, on_press=self.delbut)
         self.equalbutton.bind(on_release=self.equalcall)
         self.diffrenbutton.bind(on_release=self.differentiate)
         self.integrabutton.bind(on_release=self.integrate)
+        self.simplifybutton.bind(on_release=self.simplify)        
         # Clock
         Clock.schedule_interval(self.outputloop, 0)
 
@@ -480,7 +490,16 @@ class mainapp(BoxLayout):
         except Exception as e:
             print e
 
-
+    def simplify(self, ins):
+        finalexprstr = self.rout.text.replace('^','**')
+        
+        try:
+            expr = N(sympify(finalexprstr))
+            simplifiedexpr = sympy.simplify(expr)
+            self.out.text = str(simplifiedexpr).replace('Exp','e')
+            self.equalcall(None)
+        except Exception as e:
+            print e
 class myapp(App):
     theme_cls = ThemeManager()
 
