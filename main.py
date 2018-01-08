@@ -10,7 +10,9 @@ from kivymd.label import MDLabel
 #Android Fixing
 import os
 
-if not os.path.isdir('./unittest'):
+try:
+    import sympy
+except:
     import zipfile
 
     zip_ref = zipfile.ZipFile("unittest.zip", 'r')
@@ -80,11 +82,11 @@ BoxLayout:
         MDLabel:
             id:realtimeupdate
             text:'0'
-            size_hint_y:0.6
             font_style:'Headline'
-            font_size:60
+            font_size:20
             halign:'right'
             padding:(20,0)
+            size:self.texture_size
             
 
     ScreenManager:
@@ -426,9 +428,12 @@ class mainapp(BoxLayout):
         self.out.text = tex
         if self.out.text != self.rout.text and self.out.text != self.pretex:
             self.equalcall(None, out=self.rout)
+            routtext=self.rout.text
+            try:
+                self.rout.text=sympy.pretty(sympify(routtext),use_unicode=False)
+            except:
+                pass
             self.pretex = self.out.text
-        if self.rout.text == self.out.text:
-            self.rout.text = self.out.text
 
     def delbut(self, ins):
         tex = self.out.text
@@ -460,7 +465,7 @@ class mainapp(BoxLayout):
             tex = str(eval(str(expr)))
         except:
             tex = expr
-        self.ou.text = str(tex)
+        self.ou.text = str(tex).replace('**','^')
 
     def differentiate(self, ins):
         finalexprstr = self.rout.text.replace('^', '**')
@@ -470,7 +475,7 @@ class mainapp(BoxLayout):
             expr = N(sympify(finalexprstr))
             # expr=N(parse_expr(finalexprstr,transformations=transformations))
             difexpr = diff(expr, x)
-            self.out.text = str(difexpr)
+            self.out.text = str(difexpr).replace('**','^')
             self.equalcall(None)
         except Exception as e:
             errormessage = str(e.message)
@@ -485,7 +490,7 @@ class mainapp(BoxLayout):
             expr = N(sympify(finalexprstr))
             # expr=N(parse_expr(finalexprstr,transformations=transformations))
             difexpr = integrate(expr, x)
-            self.out.text = str(difexpr).replace('Exp', 'e')
+            self.out.text = str(difexpr).replace('**', '^')
             self.equalcall(None)
         except Exception as e:
             print e
