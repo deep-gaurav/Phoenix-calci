@@ -4,6 +4,7 @@ from kivy.lang.builder import Builder
 from kivymd.theming import ThemeManager
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
+
 from kivy import *
 from kivymd.label import MDLabel
 
@@ -70,15 +71,15 @@ BoxLayout:
     orientation: 'vertical'
     BoxLayout:
         orientation:'vertical'
-        size_hint_y:0.5
+        size_hint_y:0.6
         MDTextField:
             id:out
             text:'0'
-            font_style:'Title'
-            font_size:80
+            font_size:60
             halign:'right'
             padding:(20,0)
-            max_lines:1
+            multiline:True
+            
         MDLabel:
             bg_color:(0,0,0)
             size_hint:(1,1)
@@ -416,7 +417,6 @@ class mainapp(BoxLayout):
 
         # extras
         self.pretex = '..'
-
     def outputloop(self, dt):
         tex = self.out.text
         if tex == '':
