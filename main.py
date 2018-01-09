@@ -7,11 +7,11 @@ from kivy.clock import Clock
 from kivy import *
 from kivymd.label import MDLabel
 
-#Android Fixing
-import os
 
 try:
-    import sympy
+    print 'try import sympy'
+    import sympy.simplify
+    print 'symp import successfull'
 except:
     import zipfile
 
@@ -80,14 +80,12 @@ BoxLayout:
             padding:(20,0)
             max_lines:1
         MDLabel:
+            bg_color:(0,0,0)
+            size_hint:(1,1)
             id:realtimeupdate
             text:'0'
-            font_style:'Headline'
-            font_size:20
-            halign:'right'
-            padding:(20,0)
-            size:self.texture_size
-            
+            font_name:'Hack-Regular'
+            halign:'center'
 
     ScreenManager:
         id:screenmgr
@@ -430,7 +428,8 @@ class mainapp(BoxLayout):
             self.equalcall(None, out=self.rout)
             routtext=self.rout.text
             try:
-                self.rout.text=sympy.pretty(sympify(routtext),use_unicode=False)
+                self.rout.text=sympy.pretty(sympify(routtext),use_unicode=True)
+                print(self.rout.text)
             except:
                 pass
             self.pretex = self.out.text
@@ -468,7 +467,7 @@ class mainapp(BoxLayout):
         self.ou.text = str(tex).replace('**','^')
 
     def differentiate(self, ins):
-        finalexprstr = self.rout.text.replace('^', '**')
+        finalexprstr = self.out.text.replace('^', '**')
         # finalexprstr = finalexprstr.replace('e', 'E')
         # finalexprstr = finalexprstr.replace('log', 'log10')
         try:
@@ -483,7 +482,7 @@ class mainapp(BoxLayout):
             # TODO
 
     def integrate(self, ins):
-        finalexprstr = self.rout.text.replace('^', '**')
+        finalexprstr = self.out.text.replace('^', '**')
         # finalexprstr = finalexprstr.replace('e', 'E')
         # finalexprstr = finalexprstr.replace('log', 'log10')
         try:
