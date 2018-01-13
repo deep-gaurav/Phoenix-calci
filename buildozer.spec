@@ -19,7 +19,7 @@ source.dir = .
 #source.include_patterns = assets/*,images/*.png
 
 # (list) Source files to exclude (let empty to not exclude anything)
-source.exclude_exts = spec,pyc
+source.exclude_exts = spec,pyc,apk
 
 # (list) List of directory to exclude (let empty to not exclude anything)
 source.exclude_dirs = tests, bin
@@ -46,10 +46,10 @@ requirements = kivy
 #garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = splash.png
+presplash.filename = splash.jpg
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/icon.png
+icon.filename = icon.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.lang.builder import Builder
@@ -27,6 +29,9 @@ import sympy
 from kivymd.dialog import MDDialog
 from kivymd.label import MDLabel
 from kivymd.textfields import MDTextField
+from sympy.physics.units import *
+
+transformations = (standard_transformations + (implicit_multiplication_application,))
 
 x = symbols('x')
 kvv = """
@@ -267,6 +272,13 @@ BoxLayout:
                             text:'e'
                             font_size:20
                             halign:'center'
+                    MDFlatButton:
+                        on_press:out.text+=u'\u00b0'
+                        size_hint:(1,1)
+                        MDLabel:
+                            text:u'\u00b0'
+                            font_size:20
+                            halign:'center'
                 ScrollView:
                     do_scroll_x:False
                     GridLayout:
@@ -371,7 +383,21 @@ BoxLayout:
                             MDLabel:
                                 text:'Simplify'
                                 font_size:20
-                                halign:'center'     
+                                halign:'center' 
+                        MDFlatButton:
+                            id:factorise
+                            size_hint:(1,1)
+                            MDLabel:
+                                text:'Factorise'
+                                font_size:20
+                                halign:'center'    
+                        MDFlatButton:
+                            id:expand
+                            size_hint:(1,1)
+                            MDLabel:
+                                text:'Expand'
+                                font_size:20
+                                halign:'center'    
 """
 tex = '0'
 
@@ -392,12 +418,16 @@ class mainapp(BoxLayout):
         self.diffrenbutton = self.numpad.ids['differentiate']
         self.integrabutton = self.numpad.ids['integrate']
         self.simplifybutton = self.numpad.ids['simplify']
+        self.factorisebutton = self.numpad.ids['factorise']
+        self.expandbutton = self.numpad.ids['expand']
         # Binds
         self.delbutton.bind(on_release=self.delholdclr, on_press=self.delbut)
         self.equalbutton.bind(on_release=self.equalcall)
         self.diffrenbutton.bind(on_release=self.differentiate)
         self.integrabutton.bind(on_release=self.integrate)
-        self.simplifybutton.bind(on_release=self.simplify)        
+        self.simplifybutton.bind(on_release=self.simplify)
+        self.factorisebutton.bind(on_release=self.factorise)
+        self.expandbutton.bind(on_release=self.expand)
         # Clock
         Clock.schedule_interval(self.outputloop, 0)
 
@@ -452,64 +482,98 @@ class mainapp(BoxLayout):
         else:
             self.ou = out
         transformations = (standard_transformations + (implicit_multiplication_application,))
-        finalexprstr = self.out.text.replace('^', '**')
+        finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*degrees')
         # finalexprstr=finalexprstr.replace('e','E')
         # finalexprstr=finalexprstr.replace('log','log10')
         try:
             # expr=N(sympify(finalexprstr))
-            expr = N(parse_expr(finalexprstr, transformations=transformations))
-        except:
+            #expr = parse_expr(finalexprstr,local_dict={'degree':degrees}, transformations=transformations)
+            expr=sympify(finalexprstr)
+            print expr
+        except Exception as e:
+            print e
             expr = finalexprstr
+        print expr
         try:
             tex = str(eval(str(expr)))
         except:
             tex = expr
-        self.ou.text = str(tex).replace('**','^')
+        self.ou.text = unicode(tex).replace('**','^').replace('*degrees',u'\u00b0')
 
     def differentiate(self, ins):
-        finalexprstr = self.out.text.replace('^', '**')
+        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*degrees')
         # finalexprstr = finalexprstr.replace('e', 'E')
         # finalexprstr = finalexprstr.replace('log', 'log10')
         try:
-            expr = N(sympify(finalexprstr))
-            # expr=N(parse_expr(finalexprstr,transformations=transformations))
+            #expr = N(sympify(finalexprstr))
+            expr=self.expgen()
             difexpr = diff(expr, x)
-            self.out.text = str(difexpr).replace('**','^')
-            self.equalcall(None)
+            self.finaloutstr(difexpr)
         except Exception as e:
             errormessage = str(e.message)
             errordialog = MDDialog(body=errormessage)
             # TODO
 
     def integrate(self, ins):
-        finalexprstr = self.out.text.replace('^', '**')
+        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*degrees')
         # finalexprstr = finalexprstr.replace('e', 'E')
         # finalexprstr = finalexprstr.replace('log', 'log10')
         try:
-            expr = N(sympify(finalexprstr))
-            # expr=N(parse_expr(finalexprstr,transformations=transformations))
+            #expr = N(sympify(finalexprstr))
+            expr=self.expgen()
             difexpr = integrate(expr, x)
-            self.out.text = str(difexpr).replace('**', '^')
-            self.equalcall(None)
+            self.finaloutstr(difexpr)
         except Exception as e:
             print e
 
     def simplify(self, ins):
-        finalexprstr = self.rout.text.replace('^','**')
-        
+        #finalexprstr = self.out.text.replace('^','**').replace(u'\u00b0','*degrees')
+
         try:
-            expr = N(sympify(finalexprstr))
+            expr=self.expgen()
             simplifiedexpr = sympy.simplify(expr)
-            self.out.text = str(simplifiedexpr).replace('Exp','e')
-            self.equalcall(None)
+            self.finaloutstr(simplifiedexpr)
         except Exception as e:
             print e
+
+    def factorise(self, ins):
+        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*degrees')
+
+        try:
+            expr=self.expgen()
+            simplifiedexpr = sympy.factor(expr)
+            self.finaloutstr(simplifiedexpr)
+        except Exception as e:
+            print e
+
+    def expand(self,ins):
+        try:
+            expr=self.expgen()
+            expandexpr=sympy.expand(expr)
+            self.finaloutstr(expandexpr)
+        except Exception as e:
+            print e
+
+    def expgen(self):
+        try:
+            finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0', '*degrees')
+            expr = sympify(finalexprstr)
+            return expr
+        except Exception as e:
+            print e
+
+    def finaloutstr(self,expr):
+        tmps=unicode(expr)
+        tmps.replace('**','^').replace('degrees',u'\u00b0')
+        print tmps
+        self.out.text=tmps
+        self.equalcall(None)
+
 class myapp(App):
     theme_cls = ThemeManager()
 
     def build(self):
         return mainapp()
-
 
 A = myapp()
 A.run()
