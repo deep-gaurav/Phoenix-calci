@@ -29,8 +29,6 @@ import sympy
 from kivymd.dialog import MDDialog
 from kivymd.label import MDLabel
 from kivymd.textfields import MDTextField
-from sympy.physics.units import *
-
 transformations = (standard_transformations + (implicit_multiplication_application,))
 
 x = symbols('x')
@@ -482,26 +480,29 @@ class mainapp(BoxLayout):
         else:
             self.ou = out
         transformations = (standard_transformations + (implicit_multiplication_application,))
-        finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*degrees')
+        finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*(pi/180)')
         # finalexprstr=finalexprstr.replace('e','E')
         # finalexprstr=finalexprstr.replace('log','log10')
         try:
-            # expr=N(sympify(finalexprstr))
-            #expr = parse_expr(finalexprstr,local_dict={'degree':degrees}, transformations=transformations)
-            expr=sympify(finalexprstr)
-            print expr
-        except Exception as e:
-            print e
-            expr = finalexprstr
+            expr=eval(finalexprstr)
+        except:
+            try:
+                # expr=N(sympify(finalexprstr))
+                expr = N(parse_expr(finalexprstr, transformations=transformations))
+                #expr=sympify(finalexprstr)
+                print expr
+            except Exception as e:
+                print e
+                expr = finalexprstr
         print expr
         try:
-            tex = str(eval(str(expr)))
+            tex = str(expr)
         except:
             tex = expr
-        self.ou.text = unicode(tex).replace('**','^').replace('*degrees',u'\u00b0')
+        self.ou.text = unicode(tex).replace('**','^').replace('*(pi/180)',u'\u00b0')
 
     def differentiate(self, ins):
-        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*degrees')
+        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*(pi/180)')
         # finalexprstr = finalexprstr.replace('e', 'E')
         # finalexprstr = finalexprstr.replace('log', 'log10')
         try:
@@ -515,7 +516,7 @@ class mainapp(BoxLayout):
             # TODO
 
     def integrate(self, ins):
-        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*degrees')
+        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*(pi/180)')
         # finalexprstr = finalexprstr.replace('e', 'E')
         # finalexprstr = finalexprstr.replace('log', 'log10')
         try:
@@ -527,7 +528,7 @@ class mainapp(BoxLayout):
             print e
 
     def simplify(self, ins):
-        #finalexprstr = self.out.text.replace('^','**').replace(u'\u00b0','*degrees')
+        #finalexprstr = self.out.text.replace('^','**').replace(u'\u00b0','*(pi/180)')
 
         try:
             expr=self.expgen()
@@ -537,7 +538,7 @@ class mainapp(BoxLayout):
             print e
 
     def factorise(self, ins):
-        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*degrees')
+        #finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0','*(pi/180)')
 
         try:
             expr=self.expgen()
@@ -556,15 +557,15 @@ class mainapp(BoxLayout):
 
     def expgen(self):
         try:
-            finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0', '*degrees')
-            expr = sympify(finalexprstr)
+            finalexprstr = self.out.text.replace('^', '**').replace(u'\u00b0', '*(pi/180)')
+            expr = N(parse_expr(finalexprstr, transformations=transformations))
             return expr
         except Exception as e:
             print e
 
     def finaloutstr(self,expr):
         tmps=unicode(expr)
-        tmps.replace('**','^').replace('degrees',u'\u00b0')
+        tmps.replace('**','^').replace('(pi/180)',u'\u00b0')
         print tmps
         self.out.text=tmps
         self.equalcall(None)
