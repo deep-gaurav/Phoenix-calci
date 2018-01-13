@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.lang.builder import Builder
