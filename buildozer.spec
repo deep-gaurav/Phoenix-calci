@@ -36,7 +36,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = kivy
+requirements = mpmath,kivy
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -46,10 +46,10 @@ requirements = kivy
 #garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = splash.jpg
+#presplash.filename = splash.jpg
 
 # (str) Icon of the application
-icon.filename = icon.png
+#icon.filename = icon.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait
@@ -97,13 +97,13 @@ fullscreen = 0
 #android.sdk = 20
 
 # (str) Android NDK version to use
-#android.ndk = 9c
+android.ndk = 16b
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
-#android.ndk_path =
+android.ndk_path = /home/deep/android-ndk-r16b
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
 #android.sdk_path =
@@ -114,7 +114,7 @@ fullscreen = 0
 # (bool) If True, then skip trying to update the Android sdk
 # This can be useful to avoid excess Internet downloads or save time
 # when an update is due and you just want to test/build your package
-# android.skip_update = False
+android.skip_update = True
 
 # (str) Android entry point, default is ok for Kivy-based app
 #android.entrypoint = org.renpy.android.PythonActivity
@@ -199,7 +199,7 @@ android.arch = armeabi-v7a
 #p4a.hook =
 
 # (str) Bootstrap to use for android builds
-# p4a.bootstrap = sdl2
+p4a.bootstrap = sdl2
 
 
 #
